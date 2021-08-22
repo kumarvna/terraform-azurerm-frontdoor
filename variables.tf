@@ -37,7 +37,7 @@ variable "backend_pool" {
   description = "A logical grouping of app instances across the world that receive the same traffic and respond with expected behavior. These backends are deployed across different regions or within the same region. All backends can be in `Active/Active` deployment mode or what is defined as `Active/Passive` configuration. Azure by default allows specifying up to `50` Backend Pools."
   type = list(object({
     name = string
-    backup = object({
+    backend = object({
       address     = string
       host_header = string
       http_port   = number
@@ -66,13 +66,13 @@ variable "backend_pool_health_probe" {
 
 variable "backend_pool_load_balancing" {
   description = "Load-balancing settings for the backend pool to determine if the backend is healthy or unhealthy. They also check how to load-balance traffic between different backends in the backend pool."
-  type = object({
+  type = list(object({
     name                            = string
     sample_size                     = optional(number)
     successful_samples_required     = optional(number)
     additional_latency_milliseconds = optional(number)
-  })
-  default = {}
+  }))
+  default = []
 }
 
 variable "frontend_endpoint" {
@@ -91,9 +91,9 @@ variable "routing_rule" {
   description = "The list of Routing Rules to determine which particular rule to match the request to and then take the defined action in the configuration"
   type = list(object({
     name               = string
-    frontend_endpoints = string
+    frontend_endpoints = list(string)
     accepted_protocols = optional(list(string))
-    patterns_to_match  = optional(string)
+    patterns_to_match  = optional(list(string))
     forwarding_configuration = optional(object({
       backend_pool_name                     = string
       cache_enabled                         = optional(bool)

@@ -30,7 +30,7 @@ resource "azurerm_frontdoor" "main" {
   location                                     = local.location
   backend_pools_send_receive_timeout_seconds   = var.backend_pools_send_receive_timeout_seconds
   enforce_backend_pools_certificate_name_check = var.enforce_backend_pools_certificate_name_check
-  load_balancerf_enabled                       = true
+  load_balancer_enabled                        = true
   friendly_name                                = var.friendly_name
   tags                                         = merge({ "ResourceName" = format("%s", var.frontdoor_name) }, var.tags, )
 
@@ -88,8 +88,38 @@ resource "azurerm_frontdoor" "main" {
     }
   }
 
-  routing_rule {
-
+  dynamic "routing_rule" {
+    for_each = var.routing_rule
+    content {
+      name               = routing_rule.value.name
+      frontend_endpoints = routing_rule.value.frontend_endpoints
+      accepted_protocols = routing_rule.value.accepted_protocols
+      patterns_to_match  = routing_rule.value.patterns_to_match
+      enabled            = true
+      dynamic "forwarding_configuration" {
+        for_each = routing_rule.value.forwarding_configuration
+        content {
+          backend_pool_name                     = forwarding_configuration.value.backend_pool_name
+          cache_enabled                         = lookup(forwarding_configuration.value, "cache_enabled", false)
+          cache_use_dynamic_compression         = lookup(forwarding_configuration.value, "cache_use_dynamic_compression", false)
+          cache_query_parameter_strip_directive = lookup(forwarding_configuration.value, "cache_query_parameter_strip_directive", "StripAll")
+          cache_query_parameters                = forwarding_configuration.value.cache_query_parameters
+          cache_duration                        = forwarding_configuration.value.cache_enabled == true ? forwarding_configuration.value.cache_duration : null
+          custom_forwarding_path                = forwarding_configuration.value.custom_forwarding_path
+          forwarding_protocol                   = forwarding_configuration.value.forwarding_protocol
+        }
+      }
+      dynamic "redirect_configuration" {
+        for_each = routing_rule.value.redirect_configuration
+        content {
+          custom_host         = redirect_configuration.value.custom_host
+          redirect_protocol   = lookup(redirect_configuration.value, "redirect_protocol", "MatchRequest")
+          redirect_type       = redirect_configuration.value.redirect_type
+          custom_fragment     = redirect_configuration.value.custom_fragment
+          custom_path         = redirect_configuration.value.custom_path
+          custom_query_string = redirect_configuration.value.custom_query_string
+        }
+      }
+    }
   }
-
 }
