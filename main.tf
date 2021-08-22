@@ -77,8 +77,15 @@ resource "azurerm_frontdoor" "main" {
     }
   }
 
-  frontend_endpoint {
-
+  dynamic "frontend_endpoint" {
+    for_each = var.frontend_endpoint
+    content {
+      name                                    = frontend_endpoint.value.name
+      host_name                               = frontend_endpoint.value.host_name
+      session_affinity_enabled                = frontend_endpoint.value.session_affinity_enabled
+      session_affinity_ttl_seconds            = frontend_endpoint.value.session_affinity_ttl_seconds
+      web_application_firewall_policy_link_id = frontend_endpoint.value.web_application_firewall_policy_link_id
+    }
   }
 
   routing_rule {
