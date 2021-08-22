@@ -99,7 +99,7 @@ variable "routing_rule" {
       cache_enabled                         = optional(bool)
       cache_use_dynamic_compression         = optional(bool)
       cache_query_parameter_strip_directive = optional(string)
-      cache_query_parameters                = optional(string)
+      cache_query_parameters                = optional(list(string))
       cache_duration                        = optional(string)
       custom_forwarding_path                = optional(string)
       forwarding_protocol                   = optional(string)

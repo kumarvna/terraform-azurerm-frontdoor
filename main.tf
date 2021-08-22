@@ -27,7 +27,7 @@ resource "azurerm_resource_group" "rg" {
 resource "azurerm_frontdoor" "main" {
   name                                         = format("%s", var.frontdoor_name)
   resource_group_name                          = local.resource_group_name
-  location                                     = local.location
+#  location                                     = "global"
   backend_pools_send_receive_timeout_seconds   = var.backend_pools_send_receive_timeout_seconds
   enforce_backend_pools_certificate_name_check = var.enforce_backend_pools_certificate_name_check
   load_balancer_enabled                        = true
@@ -40,8 +40,9 @@ resource "azurerm_frontdoor" "main" {
       name                = backend_pool.value.name
       load_balancing_name = backend_pool.value.load_balancing_name
       health_probe_name   = backend_pool.value.health_probe_name
+
       dynamic "backend" {
-        for_each = backend_pool.value.backend
+        for_each = backend_pool.value.backend[*]
         content {
           enabled     = true
           address     = backend.value.address
@@ -96,8 +97,9 @@ resource "azurerm_frontdoor" "main" {
       accepted_protocols = routing_rule.value.accepted_protocols
       patterns_to_match  = routing_rule.value.patterns_to_match
       enabled            = true
+
       dynamic "forwarding_configuration" {
-        for_each = routing_rule.value.forwarding_configuration
+        for_each = routing_rule.value.forwarding_configuration[*]
         content {
           backend_pool_name                     = forwarding_configuration.value.backend_pool_name
           cache_enabled                         = lookup(forwarding_configuration.value, "cache_enabled", false)
@@ -110,7 +112,7 @@ resource "azurerm_frontdoor" "main" {
         }
       }
       dynamic "redirect_configuration" {
-        for_each = routing_rule.value.redirect_configuration
+        for_each = routing_rule.value.redirect_configuration[*]
         content {
           custom_host         = redirect_configuration.value.custom_host
           redirect_protocol   = lookup(redirect_configuration.value, "redirect_protocol", "MatchRequest")
