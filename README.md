@@ -4,6 +4,13 @@ Azure Front Door is a fast, reliable, and secure modern cloud CDN that uses the 
 
 This Terraform module helps create Microsoft's highly available and scalable web application acceleration platform and global HTTP(s) load balancer Azure Front Door Service with Web Application Firewall policies and SSL offloading.
 
+## Resources supported
+
+- [Azure Front Door](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/frontdoor)
+- [Azure WAF Policies](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/frontdoor_firewall_policy)
+- [Azure Custom domain and SSL offloading](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/frontdoor_custom_https_configuration)
+- [Frontdoor Monitoring Diagnostics](https://docs.microsoft.com/en-us/azure/frontdoor/front-door-diagnostics)
+
 ## Module Usage
 
 ```terraform
@@ -108,8 +115,8 @@ module "frontdoor" {
 
 ## Module Usage examples for
 
-* [Frontdoor with SSL Offloading](examples/frontdoor_with_custom_https_configuration/)
-* [Frontdoor with WAF Policies](examples/frontdoor_with_waf_policies/)
+- [Frontdoor with SSL Offloading](examples/frontdoor_with_custom_https_configuration/)
+- [Frontdoor with WAF Policies](examples/frontdoor_with_waf_policies/)
 
 ## **`backend_pools`** - Backends and backend pools
 
@@ -154,7 +161,7 @@ To determine the health and proximity of each backend for a given Front Door env
 `probe_method`|Specifies HTTP method the health probe uses when querying the backend pool instances. Possible values include: `Get` and `Head`. Defaults to `Get`.
 `interval_in_seconds`| The number of seconds between each Health Probe. Defaults to `120`.
 
-## **`backend_pool_load_balancing`** - Load-balancing settings for the backend pool
+## **`backend_pool_load_balancing`** - settings for the backend pools
 
 Load-balancing settings for the backend pool define how we evaluate health probes. These settings determine if the backend is healthy or unhealthy. They also check how to load-balance traffic between different backends in the backend pool. The following settings are available for `backend_pool_load_balancing` object:
 
@@ -165,7 +172,7 @@ Load-balancing settings for the backend pool define how we evaluate health probe
 `successful_samples_required`|The number of samples within the sample period that must succeed. Defaults to `2`.
 `additional_latency_milliseconds`|The additional latency in milliseconds for probes to fall into the lowest latency bucket. Defaults to `0`.
 
-## **`frontend_endpoints`** - Add a custom domain to your Front Door
+## **`frontend_endpoints`** - Adding Custom Domains and SSL Offloading
 
 The frontend host specifies a desired subdomain on Front Door's default domain i.e. azurefd.net to route traffic from that host via Front Door. You can optionally onboard custom domains as well.
 
@@ -259,7 +266,6 @@ Name | Description | Type | Default
 `frontdoor_name`|Specifies the name of the Front Door service. Must be globally unique|string|`""`
 friendly_name|A friendly name for the Front Door service|string|`""`
 `backend_pools_send_receive_timeout_seconds`|Specifies the send and receive timeout on forwarding request to the backend. When the timeout is reached, the request fails and returns. Possible values are between `0` - `240`. Defaults to `60`.|number|`60`
-string|`""`
 `enforce_backend_pools_certificate_name_check`|Enforce certificate name check on HTTPS requests to all backend pools, this setting will have no effect on HTTP requests. Permitted values are `true` or `false`.|string|`false`
 `backend_pools`|A logical grouping of app instances across the world that receive the same traffic and respond with expected behavior. These backends are deployed across different regions or within the same region. All backends can be in `Active/Active` deployment mode or what is defined as `Active/Passive` configuration. Azure by default allows specifying up to `50` Backend Pools.|list(object({}))|`[]`
 `backend_pool_health_probes`|The list of backend pool health probes.|list(object({}))|`[]`
@@ -297,6 +303,6 @@ Originally created by [Kumaraswamy Vithanala](mailto:kumarvna@gmail.com)
 
 ## Other resources
 
-* [Azure Frontdoor documentation](https://docs.microsoft.com/en-us/azure/frontdoor/front-door-overview)
+- [Azure Frontdoor documentation](https://docs.microsoft.com/en-us/azure/frontdoor/front-door-overview)
 
-* [Terraform AzureRM Provider Documentation](https://www.terraform.io/docs/providers/azurerm/index.html)
+- [Terraform AzureRM Provider Documentation](https://www.terraform.io/docs/providers/azurerm/index.html)
