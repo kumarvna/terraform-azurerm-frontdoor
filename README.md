@@ -62,9 +62,11 @@ module "frontdoor" {
     }
   ]
 
-  # In order to enable the use of your own custom HTTPS certificate you must grant Azure Front Door Service 
-  # access to your key vault. For instuctions on how to configure your Key Vault correctly 
-  # Please refer to the product documentation (https://bit.ly/38FuAZv).
+  # In order to enable the use of your own custom HTTPS certificate you must grant  
+  # Azure Front Door Service access to your key vault. For instuctions on how to  
+  # configure your Key Vault correctly. Please refer to the product documentation.
+  # https://bit.ly/38FuAZv
+
   frontend_endpoints = [
     {
       name      = "exampleFrontendEndpoint1"
@@ -108,6 +110,45 @@ module "frontdoor" {
 
 * [Frontdoor with SSL Offloading](examples/frontdoor_with_custom_https_configuration/)
 * [Frontdoor with WAF Policies](examples/frontdoor_with_waf_policies/)
+
+## **`backend_pools`** - Backends and backend pools
+
+A backend pool in Front Door refers to the set of backends that receive similar traffic for their app. In other words, it's a logical grouping of your app instances across the world that receive the same traffic and respond with expected behavior. These backends are deployed across different regions or within the same region. All backends can be in Active/Active deployment mode or what is defined as Active/Passive configuration.
+
+Front Door backends refers to the host name or public IP of your application that serves your client requests. Front Door supports both Azure and non-Azure resources in the backend pool. The application can either be in your on-premises datacenter or located in another cloud provider.
+
+`backend_pools` object accepts following argumnets
+
+| Name | Description
+|--|--
+`name`| Specifies the name of the Backend Pool
+`load_balancing_name`|Specifies the name of the `backend_pool_load_balancing` block within this resource to use for this `Backend Pool`.
+`health_probe_name`|Specifies the name of the `backend_pool_health_probe` block within this resource to use for this `Backend Pool`.
+||**`backend` - A backend block as defined below**||
+`address`|Location of the backend (IP address or FQDN)
+`host_header`|The value to use as the host header sent to the backend.
+`http_port`|The HTTP TCP port number. Possible values are between `1` - `65535`.
+`https_port`|The HTTPS TCP port number. Possible values are between `1` - `65535`.
+`priority`| Priority to use for load balancing. Higher priorities will not be used for load balancing if any lower priority backend is healthy. Defaults to `1`.
+`weight`| Weight of this endpoint for load balancing purposes. Defaults to `50`.
+
+## **`backend_pool_health_probes`** - Health probes
+
+To determine the health and proximity of each backend for a given Front Door environment, each Front Door environment periodically sends a synthetic HTTP/HTTPS request to each of your configured backends. Front Door then uses these responses from the probe to determine the "best" backend resources to route your client requests.
+
+> For lower load and cost on your backends, Front Door recommends using `HEAD` requests for health probes.
+
+`backend_pool_health_probes` object accepts following argumnets
+
+| Name | Description
+|--|--
+`name`|Specifies the name of the Health Probe.
+`enabled`|Is this health probe enabled? Dafaults to `true`.
+`path`|The path to use for the Health Probe. Default is `/`.
+`protocol`|Protocol scheme to use for the Health Probe. Defaults to `Http`.
+`probe_method`|Specifies HTTP method the health probe uses when querying the backend pool instances. Possible values include: `Get` and `Head`. Defaults to `Get`.
+`interval_in_seconds`| The number of seconds between each Health Probe. Defaults to `120`.
+
 
 ## Recommended naming and tagging conventions
 
