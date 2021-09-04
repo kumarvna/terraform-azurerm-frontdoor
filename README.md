@@ -104,6 +104,11 @@ module "frontdoor" {
 }
 ```
 
+## Module Usage examples for
+
+* [Frontdoor with SSL Offloading](examples/frontdoor_with_custom_https_configuration/)
+* [Frontdoor with WAF Policies](examples/frontdoor_with_waf_policies/)
+
 ## Recommended naming and tagging conventions
 
 Applying tags to your Azure resources, resource groups, and subscriptions to logically organize them into a taxonomy. Each tag consists of a name and a value pair. For example, you can apply the name `Environment` and the value `Production` to all the resources in production.
