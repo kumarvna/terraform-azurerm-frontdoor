@@ -4,7 +4,7 @@ Azure Front Door Standard/Premium is a fast, reliable, and secure modern cloud C
 
 This Terraform module helps create Microsoft's highly available and scalable web application acceleration platform and global HTTP(s) load balancer Azure Front Door Service with Web Application Firewall policies and SSL offloading.
 
-## Module Usage
+## Module Usage for Frontdoor with WAF Policies
 
 ```terraform
 # Azurerm Provider configuration
