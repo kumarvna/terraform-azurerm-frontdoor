@@ -81,7 +81,7 @@ module "frontdoor" {
     },
     {
       name      = "exampleFrontendEndpoint3"
-      host_name = "example-frontdoor52.azurefd.net"
+      host_name = "example-frontdoor53.azurefd.net"
       custom_https_configuration = {
         certificate_source                         = "AzureKeyVault"
         azure_key_vault_certificate_vault_id       = "" # valid keyvalut id

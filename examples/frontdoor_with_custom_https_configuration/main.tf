@@ -61,23 +61,23 @@ module "frontdoor" {
   frontend_endpoints = [
     {
       name      = "exampleFrontendEndpoint1"
-      host_name = "kumars-frontdoor21.azurefd.net"
+      host_name = "example-frontdoor51.azurefd.net"
     },
     {
       name      = "exampleFrontendEndpoint2"
-      host_name = "kumars-frontdoor22.azurefd.net"
+      host_name = "example-frontdoor52.azurefd.net"
       custom_https_configuration = {
         certificate_source = "FrontDoor"
       }
     },
     {
       name      = "exampleFrontendEndpoint3"
-      host_name = "kumars-frontdoor23.azurefd.net"
+      host_name = "example-frontdoor53.azurefd.net"
       custom_https_configuration = {
         certificate_source                         = "AzureKeyVault"
-        azure_key_vault_certificate_vault_id       = ""       # valid keyvalut id
-        azure_key_vault_certificate_secret_name    = ""       # valid certificate secret
-        azure_key_vault_certificate_secret_version = "Latest" # optional, use "latest" if not defined
+        azure_key_vault_certificate_vault_id       = "" # valid keyvalut id
+        azure_key_vault_certificate_secret_name    = "" # valid certificate secret
+        azure_key_vault_certificate_secret_version = "Latest"
       }
     }
   ]
