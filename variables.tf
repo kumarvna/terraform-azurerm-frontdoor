@@ -179,6 +179,21 @@ variable "web_application_firewall_policy" {
   default = null
 }
 
+variable "log_analytics_workspace_name" {
+  description = "The name of log analytics workspace name"
+  default     = null
+}
+
+variable "storage_account_name" {
+  description = "The name of the hub storage account to store logs"
+  default     = null
+}
+
+variable "fd_diag_logs" {
+  description = "Frontdoor Monitoring Category details for Azure Diagnostic setting"
+  default     = ["FrontdoorAccessLog", "FrontdoorWebApplicationFirewallLog"]
+}
+
 variable "tags" {
   description = "A map of tags to add to all resources"
   type        = map(string)

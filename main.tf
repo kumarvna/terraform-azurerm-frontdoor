@@ -21,6 +21,18 @@ resource "azurerm_resource_group" "rg" {
   tags     = merge({ "ResourceName" = format("%s", var.resource_group_name) }, var.tags, )
 }
 
+data "azurerm_log_analytics_workspace" "logws" {
+  count               = var.log_analytics_workspace_name != null ? 1 : 0
+  name                = var.log_analytics_workspace_name
+  resource_group_name = local.resource_group_name
+}
+
+data "azurerm_storage_account" "storeacc" {
+  count               = var.storage_account_name != null ? 1 : 0
+  name                = var.storage_account_name
+  resource_group_name = local.location
+}
+
 #---------------------------------------------------------
 # Frontdoor Resource Creation - Default is "true"
 #----------------------------------------------------------
@@ -229,5 +241,43 @@ resource "azurerm_frontdoor_custom_https_configuration" "main" {
     azure_key_vault_certificate_vault_id       = try(each.value["custom_https_configuration"]["azure_key_vault_certificate_vault_id"], null)
     azure_key_vault_certificate_secret_name    = try(each.value["custom_https_configuration"]["azure_key_vault_certificate_secret_name"], null)
     azure_key_vault_certificate_secret_version = try(each.value["custom_https_configuration"]["azure_key_vault_certificate_secret_version"], null)
+  }
+}
+
+
+#---------------------------------------------------------------
+# azurerm monitoring diagnostics - Frontdoor
+#---------------------------------------------------------------
+resource "azurerm_monitor_diagnostic_setting" "fd-diag" {
+  count                      = var.log_analytics_workspace_name != null || var.storage_account_name != null ? 1 : 0
+  name                       = lower("${var.frontdoor_name}-diag")
+  target_resource_id         = azurerm_frontdoor.main.id
+  storage_account_id         = var.storage_account_name != null ? data.azurerm_storage_account.storeacc.0.id : null
+  log_analytics_workspace_id = data.azurerm_log_analytics_workspace.logws.0.id
+
+  dynamic "log" {
+    for_each = var.fd_diag_logs
+    content {
+      category = log.value
+      enabled  = true
+
+      retention_policy {
+        enabled = false
+        days    = 0
+      }
+    }
+  }
+
+  metric {
+    category = "AllMetrics"
+
+    retention_policy {
+      enabled = false
+      days    = 0
+    }
+  }
+
+  lifecycle {
+    ignore_changes = [log, metric]
   }
 }

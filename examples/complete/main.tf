@@ -79,6 +79,8 @@ module "frontdoor" {
 
  */]
 
+  # Azure Front Door Web Application Firewall Policy configuration
+
   web_application_firewall_policy = {
     name                              = "examplefdwafpolicy"
     mode                              = "Prevention"
@@ -147,10 +149,9 @@ module "frontdoor" {
     }
   }
 
-
   # (Optional) To enable Azure Monitoring for Azure Frontdoor
   # (Optional) Specify `storage_account_name` to save monitoring logs to storage. 
-  #log_analytics_workspace_name = "loganalytics-we-sharedtest2"
+  log_analytics_workspace_name = "loganalytics-we-sharedtest2"
 
   # Adding TAG's to your Azure resources 
   tags = {
