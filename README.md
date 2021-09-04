@@ -264,7 +264,7 @@ Name | Description | Type | Default
 `resource_group_name`|The name of an existing resource group.|string|`""`
 `location`|The location for all resources while creating a new resource group.|string|`""`
 `frontdoor_name`|Specifies the name of the Front Door service. Must be globally unique|string|`""`
-friendly_name|A friendly name for the Front Door service|string|`""`
+`friendly_name`|A friendly name for the Front Door service|string|`""`
 `backend_pools_send_receive_timeout_seconds`|Specifies the send and receive timeout on forwarding request to the backend. When the timeout is reached, the request fails and returns. Possible values are between `0` - `240`. Defaults to `60`.|number|`60`
 `enforce_backend_pools_certificate_name_check`|Enforce certificate name check on HTTPS requests to all backend pools, this setting will have no effect on HTTP requests. Permitted values are `true` or `false`.|string|`false`
 `backend_pools`|A logical grouping of app instances across the world that receive the same traffic and respond with expected behavior. These backends are deployed across different regions or within the same region. All backends can be in `Active/Active` deployment mode or what is defined as `Active/Passive` configuration. Azure by default allows specifying up to `50` Backend Pools.|list(object({}))|`[]`
@@ -272,7 +272,7 @@ friendly_name|A friendly name for the Front Door service|string|`""`
 `backend_pool_load_balancing`|Load-balancing settings for the backend pool to determine if the backend is healthy or unhealthy. They also check how to load-balance traffic between different backends in the backend pool.|list(object({}))|`[]`
 `frontend_endpoints`|Lists all of the frontend endpoints within a Front Door|list(object({}))|`[]`
 `routing_rules`|The list of Routing Rules to determine which particular rule to match the request to and then take the defined action in the configuration|list(object({}))|`[]`
-web_application_firewall_policy|Manages an Azure Front Door Web Application Firewall Policy instance|map(object({}))|`null`
+`web_application_firewall_policy`|Manages an Azure Front Door Web Application Firewall Policy instance|map(object({}))|`null`
 `log_analytics_workspace_name`|The name of log analytics workspace name|string|`null`
 `storage_account_name`|The name of the hub storage account to store logs|string|`null`
 `Tags`|A map of tags to add to all resources|map|`{}`
