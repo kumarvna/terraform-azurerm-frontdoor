@@ -1,12 +1,3 @@
-# Azure Front Door Terraform Module
-
-Azure Front Door is a fast, reliable, and secure modern cloud CDN that uses the Microsoft global edge network and integrates with intelligent threat protection. It combines the capabilities of Azure Front Door, Azure Content Delivery Network (CDN) standard, and Azure Web Application Firewall (WAF) into a single secure cloud CDN platform.
-
-This Terraform module helps create Microsoft's highly available and scalable web application acceleration platform and global HTTP(s) load balancer Azure Front Door Service with WAF policies and SSL offloading.
-
-## Module Usage
-
-```terraform
 # Azurerm Provider configuration
 provider "azurerm" {
   features {}
@@ -102,4 +93,3 @@ module "frontdoor" {
     ServiceClass = "Gold"
   }
 }
-```

@@ -1,12 +1,3 @@
-# Azure Front Door Terraform Module
-
-Azure Front Door is a fast, reliable, and secure modern cloud CDN that uses the Microsoft global edge network and integrates with intelligent threat protection. It combines the capabilities of Azure Front Door, Azure Content Delivery Network (CDN) standard, and Azure Web Application Firewall (WAF) into a single secure cloud CDN platform.
-
-This Terraform module helps create Microsoft's highly available and scalable web application acceleration platform and global HTTP(s) load balancer Azure Front Door Service with WAF policies and SSL offloading.
-
-## Module Usage
-
-```terraform
 # Azurerm Provider configuration
 provider "azurerm" {
   features {}
@@ -89,6 +80,76 @@ module "frontdoor" {
     }
   ]
 
+  # Azure Front Door Web Application Firewall Policy configuration
+
+  web_application_firewall_policy = {
+    name                              = "examplefdwafpolicy"
+    mode                              = "Prevention"
+    redirect_url                      = "https://www.contoso.com"
+    custom_block_response_status_code = 403
+    custom_block_response_body        = "PGh0bWw+CjxoZWFkZXI+PHRpdGxlPkhlbGxvPC90aXRsZT48L2hlYWRlcj4KPGJvZHk+CkhlbGxvIHdvcmxkCjwvYm9keT4KPC9odG1sPg=="
+
+    custom_rule = {
+      custom_rule1 = {
+        name     = "Rule1"
+        action   = "Block"
+        enabled  = true
+        priority = 1
+        type     = "MatchRule"
+        match_condition = {
+          match_variable     = "RequestHeader"
+          match_values       = ["windows"]
+          operator           = "Contains"
+          selector           = "UserAgent"
+          negation_condition = false
+          transforms         = ["Lowercase", "Trim"]
+        }
+        rate_limit_duration_in_minutes = 1
+        rate_limit_threshold           = 10
+      }
+    }
+
+    managed_rule = {
+      managed_rule1 = {
+        type    = "DefaultRuleSet"
+        version = "1.0"
+        exclusion = {
+          exclusion1 = {
+            match_variable = "QueryStringArgNames"
+            operator       = "Equals"
+            selector       = "not_suspicious"
+          }
+        }
+        override = {
+          override1 = {
+            rule_group_name = "PHP"
+            exclusion = {
+              exclusion1 = {
+                match_variable = "QueryStringArgNames"
+                operator       = "Equals"
+                selector       = "not_suspicious"
+              }
+            }
+            rule = {
+              rule1 = {
+                rule_id = "933100"
+                action  = "Block"
+                enabled = false
+                exclusion = {
+                  exclusion1 = {
+                    match_variable = "QueryStringArgNames"
+                    operator       = "Equals"
+                    selector       = "not_suspicious"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
   # (Optional) To enable Azure Monitoring for Azure Frontdoor
   # (Optional) Specify `storage_account_name` to save monitoring logs to storage. 
   log_analytics_workspace_name = "loganalytics-we-sharedtest2"
@@ -102,4 +163,3 @@ module "frontdoor" {
     ServiceClass = "Gold"
   }
 }
-```

@@ -1,39 +1,40 @@
 output "backend_pools" {
-  description = "The ID's of the Azure Front Door Backend Pool"
-  value       = azurerm_frontdoor.main.backend_pool.*.id
+  description = "The ID of the Azure Front Door Backend Pool"
+  value       = module.frontdoor.backend_pools
 }
 
 output "backend_pool_health_probes" {
   description = "The ID's of the Azure Front Door Backend Health Probe"
-  value       = azurerm_frontdoor.main.backend_pool_health_probe.*.id
+  value       = module.frontdoor.backend_pool_health_probes
 }
 
 output "backend_pool_load_balancing" {
   description = "The ID of the Azure Front Door Backend Load Balancer"
-  value       = azurerm_frontdoor.main.backend_pool_load_balancing.*.id
+  value       = module.frontdoor.backend_pool_load_balancing
 }
 
 output "frontend_endpoint_id" {
   description = "The ID of the Azure Front Door Frontend Endpoint"
-  value       = azurerm_frontdoor.main.frontend_endpoint.*.id
+  value       = module.frontdoor.frontend_endpoint_id
 }
+
 
 output "frontdoor_id" {
   description = "The ID of the FrontDoor"
-  value       = azurerm_frontdoor.main.*.id
+  value       = module.frontdoor.frontdoor_id
 }
 
 output "frontdoor_waf_policy_id" {
   description = "The ID of the FrontDoor Firewall Policy"
-  value       = var.web_application_firewall_policy != null ? azurerm_frontdoor_firewall_policy.main.0.id : null
+  value       = module.frontdoor.frontdoor_waf_policy_id
 }
 
 output "frontdoor_waf_policy_location" {
   description = "The Azure Region where this FrontDoor Firewall Policy exists"
-  value       = var.web_application_firewall_policy != null ? azurerm_frontdoor_firewall_policy.main.0.location : null
+  value       = module.frontdoor.frontdoor_waf_policy_location
 }
 
 output "frontdoor_waf_policy_frontend_endpoint_ids" {
   description = "The Frontend Endpoints associated with this Front Door Web Application Firewall policy"
-  value       = var.web_application_firewall_policy != null ? azurerm_frontdoor_firewall_policy.main.0.frontend_endpoint_ids : null
+  value       = module.frontdoor.frontdoor_waf_policy_frontend_endpoint_ids
 }

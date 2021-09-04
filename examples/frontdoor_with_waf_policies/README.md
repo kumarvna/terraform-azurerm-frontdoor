@@ -1,19 +1,27 @@
+# Azure Front Door Terraform Module
+
+Azure Front Door Standard/Premium is a fast, reliable, and secure modern cloud CDN that uses the Microsoft global edge network and integrates with intelligent threat protection. It combines the capabilities of Azure Front Door, Azure Content Delivery Network (CDN) standard, and Azure Web Application Firewall (WAF) into a single secure cloud CDN platform.
+
+This Terraform module helps create Microsoft's highly available and scalable web application acceleration platform and global HTTP(s) load balancer Azure Front Door Service with WAF policies and SSL offloading.
+
+## Module Usage
+
+```terraform
 # Azurerm Provider configuration
 provider "azurerm" {
   features {}
 }
 
 module "frontdoor" {
-  //source  = "kumarvna/frontdoor/azurerm"
-  //version = "1.0.0"
-  source = "../../"
+  source  = "kumarvna/frontdoor/azurerm"
+  version = "1.0.0"
 
   # By default, this module will not create a resource group. Location will be same as existing RG.
   # proivde a name to use an existing resource group, specify the existing resource group name, 
   # set the argument to `create_resource_group = true` to create new resrouce group.
   resource_group_name = "rg-shared-westeurope-01"
   location            = "westeurope"
-  frontdoor_name      = "kumars-frontdoor21"
+  frontdoor_name      = "example-frontdoor51"
 
   routing_rules = [
     {
@@ -54,12 +62,15 @@ module "frontdoor" {
     }
   ]
 
+  # In order to enable the use of your own custom HTTPS certificate you must grant Azure Front Door Service 
+  # access to your key vault. For instuctions on how to configure your Key Vault correctly 
+  # Please refer to the product documentation (https://bit.ly/38FuAZv).
   frontend_endpoints = [
     {
       name      = "exampleFrontendEndpoint1"
       host_name = "kumars-frontdoor21.azurefd.net"
     },
-  /*     {
+    {
       name      = "exampleFrontendEndpoint2"
       host_name = "kumars-frontdoor22.azurefd.net"
       custom_https_configuration = {
@@ -70,14 +81,13 @@ module "frontdoor" {
       name      = "exampleFrontendEndpoint3"
       host_name = "kumars-frontdoor23.azurefd.net"
       custom_https_configuration = {
-        certificate_source                      = "AzureKeyVault"
-        azure_key_vault_certificate_vault_id    = "/subscriptions/1e3f0eeb-2235-44cd-b3a3-dcded0861d06/resourceGroups/rg-shared-westeurope-01/providers/Microsoft.KeyVault/vaults/demo-keyvault01"
-        azure_key_vault_certificate_secret_name = "demo-certificate1"
-        #        azure_key_vault_certificate_secret_version = "latest"  # optional, use "latest" if not defined
+        certificate_source                         = "AzureKeyVault"
+        azure_key_vault_certificate_vault_id       = ""       # valid keyvalut id
+        azure_key_vault_certificate_secret_name    = ""       # valid certificate secret
+        azure_key_vault_certificate_secret_version = "Latest" # optional, use "latest" if not defined
       }
     }
-
- */]
+  ]
 
   # Azure Front Door Web Application Firewall Policy configuration
 
@@ -162,3 +172,16 @@ module "frontdoor" {
     ServiceClass = "Gold"
   }
 }
+```
+
+## Terraform Usage
+
+To run this example you need to execute following Terraform commands
+
+```hcl
+terraform init
+terraform plan
+terraform apply
+```
+
+Run `terraform destroy` when you don't need these resources.
