@@ -33,7 +33,7 @@ variable "enforce_backend_pools_certificate_name_check" {
   default     = false
 }
 
-variable "backend_pool" {
+variable "backend_pools" {
   description = "A logical grouping of app instances across the world that receive the same traffic and respond with expected behavior. These backends are deployed across different regions or within the same region. All backends can be in `Active/Active` deployment mode or what is defined as `Active/Passive` configuration. Azure by default allows specifying up to `50` Backend Pools."
   type = list(object({
     name = string
@@ -52,7 +52,7 @@ variable "backend_pool" {
 }
 
 
-variable "backend_pool_health_probe" {
+variable "backend_pool_health_probes" {
   description = "The list of backend pool health probes."
   type = list(object({
     name                = string
@@ -75,7 +75,7 @@ variable "backend_pool_load_balancing" {
   default = []
 }
 
-variable "frontend_endpoint" {
+variable "frontend_endpoints" {
   description = "Lists all of the frontend endpoints within a Front Door"
   type = list(object({
     name                                    = string
@@ -83,11 +83,17 @@ variable "frontend_endpoint" {
     session_affinity_enabled                = optional(bool)
     session_affinity_ttl_seconds            = optional(number)
     web_application_firewall_policy_link_id = optional(string)
+    custom_https_configuration = optional(object({
+      certificate_source                         = optional(string)
+      azure_key_vault_certificate_vault_id       = optional(string)
+      azure_key_vault_certificate_secret_name    = optional(string)
+      azure_key_vault_certificate_secret_version = optional(string)
+    }))
   }))
   default = []
 }
 
-variable "routing_rule" {
+variable "routing_rules" {
   description = "The list of Routing Rules to determine which particular rule to match the request to and then take the defined action in the configuration"
   type = list(object({
     name               = string
@@ -114,6 +120,63 @@ variable "routing_rule" {
     }))
   }))
   default = []
+}
+
+variable "web_application_firewall_policy" {
+  description = "Manages an Azure Front Door Web Application Firewall Policy instance."
+  type = object({
+    name                              = string
+    mode                              = optional(string)
+    redirect_url                      = optional(string)
+    custom_block_response_status_code = optional(number)
+    custom_block_response_body        = optional(string)
+
+    custom_rule = optional(map(object({
+      name     = string
+      action   = string
+      priority = number
+      type     = string
+      match_condition = object({
+        match_variable     = string
+        match_values       = list(string)
+        operator           = string
+        selector           = optional(string)
+        negation_condition = optional(bool)
+        transforms         = optional(list(string))
+      })
+      rate_limit_duration_in_minutes = optional(number)
+      rate_limit_threshold           = optional(number)
+    })))
+
+    managed_rule = optional(map(object({
+      type    = string
+      version = string
+      exclusion = optional(map(object({
+        match_variable = string
+        operator       = string
+        selector       = string
+      })))
+      override = optional(map(object({
+        rule_group_name = string
+        exclusion = map(object({
+          match_variable = string
+          operator       = string
+          selector       = string
+        }))
+        rule = optional(map(object({
+          rule_id = string
+          action  = string
+          enabled = bool
+          exclusion = map(object({
+            match_variable = string
+            operator       = string
+            selector       = string
+          }))
+        })))
+      })))
+    })))
+  })
+  default = null
 }
 
 variable "tags" {
