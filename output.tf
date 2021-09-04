@@ -13,7 +13,7 @@ output "resource_group_location" {
   value       = element(coalescelist(data.azurerm_resource_group.rgrp.*.location, azurerm_resource_group.rg.*.location, [""]), 0)
 }
 
-output "backend_pools" {
+output "backend_pool_ids" {
   description = "The ID's of the Azure Front Door Backend Pool"
   value       = azurerm_frontdoor.main.backend_pool.*.id
 }

@@ -113,7 +113,7 @@ module "frontdoor" {
 
 ## **`backend_pools`** - Backends and backend pools
 
-A backend pool in Front Door refers to the set of backends that receive similar traffic for their app. In other words, it's a logical grouping of your app instances across the world that receive the same traffic and respond with expected behavior. These backends are deployed across different regions or within the same region. All backends can be in Active/Active deployment mode or what is defined as Active/Passive configuration.
+A backend pool in Front Door refers to the set of backends that receive similar traffic for their app. In other words, A logical grouping of app instances across the world that receive the same traffic and respond with expected behavior. These backends are deployed across different regions or within the same region. All backends can be in `Active/Active` deployment mode or what is defined as `Active/Passive` configuration. Azure by default allows specifying up to `50` Backend Pools.
 
 Front Door backends refers to the host name or public IP of your application that serves your client requests. Front Door supports both Azure and non-Azure resources in the backend pool. The application can either be in your on-premises datacenter or located in another cloud provider.
 
@@ -126,7 +126,7 @@ Front Door backends refers to the host name or public IP of your application tha
 `health_probe_name`|Specifies the name of the `backend_pool_health_probe` block within this resource to use for this `Backend Pool`.
 `backend` |  A backend block as defined below.
 
-### `backend` - A backend block as defined below
+> `backend` - A backend block as defined below
 
 | Name | Description
 |--|--
@@ -180,7 +180,7 @@ Before you can use a custom domain with your Front Door, you must first create a
 `web_application_firewall_policy_link_id`|Defines the Web Application Firewall policy ID for each host. By default pickup existing WAF policy if specified with module.
 `custom_https_configuration` | The `custom_https_configuration` block supports the following
 
-### The `custom_https_configuration`- block supports the following
+> The `custom_https_configuration`- block supports the following
 
 | Name | Description
 |--|--
@@ -202,7 +202,7 @@ A Front Door routing rule configuration is composed of two major parts: a "left-
 `accepted_protocols`|Protocol schemes to match for the Backend Routing Rule. Defaults to `Http`.
 `patterns_to_match`| The route patterns for the Backend Routing Rule. Defaults to `/*`.
 
-### `forwarding_configuration`| A forwarding_configuration block as defined below
+> `forwarding_configuration`| A forwarding_configuration block as defined below
 
 | Name | Description
 |--|--
@@ -215,7 +215,7 @@ A Front Door routing rule configuration is composed of two major parts: a "left-
 `custom_forwarding_path`|Path to use when constructing the request to forward to the backend. This functions as a URL Rewrite. Default behaviour preserves the URL path.
 forwarding_protocol | Protocol to use when redirecting. Valid options are `HttpOnly`, `HttpsOnly`, or `MatchRequest`. Defaults to `HttpsOnly`.
 
-### `redirect_configuration`| A redirect_configuration block as defined below
+> `redirect_configuration`| A redirect_configuration block as defined below
 
 | Name | Description
 |--|--
@@ -253,8 +253,20 @@ An effective naming convention assembles resource names by using important resou
 
 Name | Description | Type | Default
 ---- | ----------- | ---- | -------
+`create_resource_group`|Create new resource group and use it for all networking resources|string|`""`
 `resource_group_name`|The name of an existing resource group.|string|`""`
 `location`|The location for all resources while creating a new resource group.|string|`""`
+`frontdoor_name`|Specifies the name of the Front Door service. Must be globally unique|string|`""`
+friendly_name|A friendly name for the Front Door service|string|`""`
+`backend_pools_send_receive_timeout_seconds`|Specifies the send and receive timeout on forwarding request to the backend. When the timeout is reached, the request fails and returns. Possible values are between `0` - `240`. Defaults to `60`.|number|`60`
+string|`""`
+`enforce_backend_pools_certificate_name_check`|Enforce certificate name check on HTTPS requests to all backend pools, this setting will have no effect on HTTP requests. Permitted values are `true` or `false`.|string|`false`
+`backend_pools`|A logical grouping of app instances across the world that receive the same traffic and respond with expected behavior. These backends are deployed across different regions or within the same region. All backends can be in `Active/Active` deployment mode or what is defined as `Active/Passive` configuration. Azure by default allows specifying up to `50` Backend Pools.|list(object({}))|`[]`
+`backend_pool_health_probes`|The list of backend pool health probes.|list(object({}))|`[]`
+`backend_pool_load_balancing`|Load-balancing settings for the backend pool to determine if the backend is healthy or unhealthy. They also check how to load-balance traffic between different backends in the backend pool.|list(object({}))|`[]`
+`frontend_endpoints`|Lists all of the frontend endpoints within a Front Door|list(object({}))|`[]`
+`routing_rules`|The list of Routing Rules to determine which particular rule to match the request to and then take the defined action in the configuration|list(object({}))|`[]`
+web_application_firewall_policy|Manages an Azure Front Door Web Application Firewall Policy instance|map(object({}))|`null`
 `log_analytics_workspace_name`|The name of log analytics workspace name|string|`null`
 `storage_account_name`|The name of the hub storage account to store logs|string|`null`
 `Tags`|A map of tags to add to all resources|map|`{}`
@@ -266,6 +278,14 @@ Name | Description
 `resource_group_name`| The name of the resource group in which resources are created
 `resource_group_id`| The id of the resource group in which resources are created
 `resource_group_location`| The location of the resource group in which resources are created
+`backend_pool_ids`|The ID's of the Azure Front Door Backend Pool
+`backend_pool_health_probes`|The ID's of the Azure Front Door Backend Health Probe
+`backend_pool_load_balancing`|The ID of the Azure Front Door Backend Load Balancer
+`frontend_endpoint_id`|The ID of the Azure Front Door Frontend Endpoint
+`frontdoor_id`|The ID of the FrontDoor
+`frontdoor_waf_policy_id`|The ID of the FrontDoor Firewall Policy
+`frontdoor_waf_policy_location`|The Azure Region where this FrontDoor Firewall Policy exists
+`frontdoor_waf_policy_frontend_endpoint_ids`|The Frontend Endpoints associated with this Front Door Web Application Firewall policy
 
 ## Resource Graph
 

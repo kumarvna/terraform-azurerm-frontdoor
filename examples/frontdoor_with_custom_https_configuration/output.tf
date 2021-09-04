@@ -1,6 +1,6 @@
-output "backend_pools" {
+output "backend_pool_ids" {
   description = "The ID of the Azure Front Door Backend Pool"
-  value       = module.frontdoor.backend_pools
+  value       = module.frontdoor.backend_pool_ids
 }
 
 output "backend_pool_health_probes" {
