@@ -149,6 +149,36 @@ To determine the health and proximity of each backend for a given Front Door env
 `probe_method`|Specifies HTTP method the health probe uses when querying the backend pool instances. Possible values include: `Get` and `Head`. Defaults to `Get`.
 `interval_in_seconds`| The number of seconds between each Health Probe. Defaults to `120`.
 
+## **`backend_pool_load_balancing`** - Load-balancing settings for the backend pool
+
+Load-balancing settings for the backend pool define how we evaluate health probes. These settings determine if the backend is healthy or unhealthy. They also check how to load-balance traffic between different backends in the backend pool. The following settings are available for `backend_pool_load_balancing` object:
+
+| Name | Description
+|--|--
+`name`|Specifies the name of the Load Balancer.
+`sample_size`|The number of samples to consider for load balancing decisions. Defaults to `4`.
+`successful_samples_required`|The number of samples within the sample period that must succeed. Defaults to `2`.
+`additional_latency_milliseconds`|The additional latency in milliseconds for probes to fall into the lowest latency bucket. Defaults to `0`.
+
+## **`frontend_endpoints`** - Add a custom domain to your Front Door
+
+The frontend host specifies a desired subdomain on Front Door's default domain i.e. azurefd.net to route traffic from that host via Front Door. You can optionally onboard custom domains as well.
+
+Before you can use a custom domain with your Front Door, you must first create a canonical name (CNAME) record with your domain provider to point to your Front Door's default frontend host (say contoso.azurefd.net). A custom domain and its subdomain can be associated with only a single Front Door at a time. The following settings are available for `frontend_endpoints` object:
+
+| Name | Description
+|--|--
+`name`|Specifies the name of the frontend_endpoint.
+`host_name`|Specifies the host name of the frontend_endpoint. Must be a domain name. In order to use a `name.azurefd.net` domain, the name value must match the Front Door name.
+`session_affinity_enabled`|Whether to allow session affinity on this host. Valid options are true or false Defaults to false.
+`session_affinity_ttl_seconds`|The TTL to use in seconds for session affinity, if applicable. Defaults to 0.
+`web_application_firewall_policy_link_id`|Defines the Web Application Firewall policy ID for each host. By default pickup existing WAF policy if specified with module.
+||**The `custom_https_configuration`- block supports the following**||
+`certificate_source`|Certificate source to encrypted `HTTPS` traffic with. Allowed values are `FrontDoor` or `AzureKeyVault`. Defaults to `FrontDoor`.
+`azure_key_vault_certificate_vault_id`|The ID of the Key Vault containing the SSL certificate. Only valid if `certificate_source` is set to `AzureKeyVault`
+`azure_key_vault_certificate_secret_name`|The name of the Key Vault secret representing the full certificate PFX. Only valid if `certificate_source` is set to `AzureKeyVault`
+`azure_key_vault_certificate_secret_version`|The version of the Key Vault secret representing the full certificate PFX. Defaults to Latest. Only valid if `certificate_source` is set to `AzureKeyVault`
+
 
 ## Recommended naming and tagging conventions
 
