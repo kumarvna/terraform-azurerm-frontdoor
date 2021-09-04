@@ -124,7 +124,12 @@ Front Door backends refers to the host name or public IP of your application tha
 `name`| Specifies the name of the Backend Pool
 `load_balancing_name`|Specifies the name of the `backend_pool_load_balancing` block within this resource to use for this `Backend Pool`.
 `health_probe_name`|Specifies the name of the `backend_pool_health_probe` block within this resource to use for this `Backend Pool`.
-||**`backend` - A backend block as defined below**||
+`backend` |  A backend block as defined below.
+
+### `backend` - A backend block as defined below
+
+| Name | Description
+|--|--
 `address`|Location of the backend (IP address or FQDN)
 `host_header`|The value to use as the host header sent to the backend.
 `http_port`|The HTTP TCP port number. Possible values are between `1` - `65535`.
@@ -173,12 +178,53 @@ Before you can use a custom domain with your Front Door, you must first create a
 `session_affinity_enabled`|Whether to allow session affinity on this host. Valid options are true or false Defaults to false.
 `session_affinity_ttl_seconds`|The TTL to use in seconds for session affinity, if applicable. Defaults to 0.
 `web_application_firewall_policy_link_id`|Defines the Web Application Firewall policy ID for each host. By default pickup existing WAF policy if specified with module.
-||**The `custom_https_configuration`- block supports the following**||
+`custom_https_configuration` | The `custom_https_configuration` block supports the following
+
+### The `custom_https_configuration`- block supports the following
+
+| Name | Description
+|--|--
 `certificate_source`|Certificate source to encrypted `HTTPS` traffic with. Allowed values are `FrontDoor` or `AzureKeyVault`. Defaults to `FrontDoor`.
 `azure_key_vault_certificate_vault_id`|The ID of the Key Vault containing the SSL certificate. Only valid if `certificate_source` is set to `AzureKeyVault`
 `azure_key_vault_certificate_secret_name`|The name of the Key Vault secret representing the full certificate PFX. Only valid if `certificate_source` is set to `AzureKeyVault`
 `azure_key_vault_certificate_secret_version`|The version of the Key Vault secret representing the full certificate PFX. Defaults to Latest. Only valid if `certificate_source` is set to `AzureKeyVault`
 
+## **`routing_rules`** - How requests are matched to a routing rule
+
+After establishing a connection and completing a TLS handshake, when a request lands on a Front Door environment one of the first things that Front Door does is determine which particular routing rule to match the request to and then take the defined action in the configuration.
+
+A Front Door routing rule configuration is composed of two major parts: a "left-hand side" and a "right-hand side". We match the incoming request to the left-hand side of the route while the right-hand side defines how we process the request. The following settings are available for `routing_rules` object:
+
+| Name | Description
+|--|--
+`name`|Specifies the name of the Routing Rule.
+`frontend_endpoints`|The names of the `frontend_endpoint` blocks within this resource to associate with this `routing_rule`.
+`accepted_protocols`|Protocol schemes to match for the Backend Routing Rule. Defaults to `Http`.
+`patterns_to_match`| The route patterns for the Backend Routing Rule. Defaults to `/*`.
+
+### `forwarding_configuration`| A forwarding_configuration block as defined below
+
+| Name | Description
+|--|--
+`backend_pool_name`|Specifies the name of the Backend Pool to forward the incoming traffic to.
+`cache_enabled`|Specifies whether to Enable caching or not. Valid options are `true` or `false`. Defaults to `false`.
+`cache_use_dynamic_compression`|Whether to use dynamic compression when caching. Valid options are `true` or `false`. Defaults to `false`.
+`cache_query_parameter_strip_directive`|Defines cache behaviour in relation to query string parameters. Valid options are `StripAll`, `StripAllExcept`, `StripOnly` or `StripNone`. Defaults to `StripAll`.
+`cache_query_parameters`|Specify query parameters (array). Works only in combination with `cache_query_parameter_strip_directive` set to `StripAllExcept` or `StripOnly`.
+`cache_duration`|Specify the caching duration (in ISO8601 notation e.g. `P1DT2H` for 1 day and 2 hours). Needs to be greater than 0 and smaller than 365 days. `cache_duration` works only in combination with `cache_enabled` set to `true`.
+`custom_forwarding_path`|Path to use when constructing the request to forward to the backend. This functions as a URL Rewrite. Default behaviour preserves the URL path.
+forwarding_protocol | Protocol to use when redirecting. Valid options are `HttpOnly`, `HttpsOnly`, or `MatchRequest`. Defaults to `HttpsOnly`.
+
+### `redirect_configuration`| A redirect_configuration block as defined below
+
+| Name | Description
+|--|--
+`custom_host`|Set this to change the URL for the redirection.
+`redirect_protocol`|Protocol to use when redirecting. Valid options are `HttpOnly`, `HttpsOnly`, or `MatchRequest`. Defaults to `MatchRequest`
+`redirect_type`|Status code for the redirect. Valida options are `Moved`, `Found`, `TemporaryRedirect`, `PermanentRedirect`.
+`custom_fragment`|The destination fragment in the portion of URL after '#'. Set this to add a fragment to the redirect URL.
+`custom_path`|The path to retain as per the incoming request, or update in the URL for the redirection.
+`custom_query_string`|Replace any existing query string from the incoming request URL.
 
 ## Recommended naming and tagging conventions
 
