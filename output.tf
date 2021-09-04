@@ -40,15 +40,15 @@ output "frontdoor_id" {
 
 output "frontdoor_waf_policy_id" {
   description = "The ID of the FrontDoor Firewall Policy"
-  value       = var.web_application_firewall_policy != null ? azurerm_frontdoor_firewall_policy.main.0.id : null
+  value       = var.web_application_firewall_policy != null ? [for k in azurerm_frontdoor_firewall_policy.main : k.id] : null
 }
 
 output "frontdoor_waf_policy_location" {
   description = "The Azure Region where this FrontDoor Firewall Policy exists"
-  value       = var.web_application_firewall_policy != null ? azurerm_frontdoor_firewall_policy.main.0.location : null
+  value       = var.web_application_firewall_policy != null ? [for k in azurerm_frontdoor_firewall_policy.main : k.location] : null
 }
 
 output "frontdoor_waf_policy_frontend_endpoint_ids" {
   description = "The Frontend Endpoints associated with this Front Door Web Application Firewall policy"
-  value       = var.web_application_firewall_policy != null ? azurerm_frontdoor_firewall_policy.main.0.frontend_endpoint_ids : null
+  value       = var.web_application_firewall_policy != null ? [for k in azurerm_frontdoor_firewall_policy.main : k.frontend_endpoint_ids] : null
 }

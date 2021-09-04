@@ -53,9 +53,11 @@ module "frontdoor" {
     }
   ]
 
-  # In order to enable the use of your own custom HTTPS certificate you must grant Azure Front Door Service 
-  # access to your key vault. For instuctions on how to configure your Key Vault correctly 
-  # Please refer to the product documentation (https://bit.ly/38FuAZv).
+  # In order to enable the use of your own custom HTTPS certificate you must grant  
+  # Azure Front Door Service access to your key vault. For instuctions on how to  
+  # configure your Key Vault correctly. Please refer to the product documentation.
+  # https://bit.ly/38FuAZv
+
   frontend_endpoints = [
     {
       name      = "exampleFrontendEndpoint1"

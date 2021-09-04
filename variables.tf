@@ -124,7 +124,7 @@ variable "routing_rules" {
 
 variable "web_application_firewall_policy" {
   description = "Manages an Azure Front Door Web Application Firewall Policy instance."
-  type = object({
+  type = map(object({
     name                              = string
     mode                              = optional(string)
     redirect_url                      = optional(string)
@@ -175,7 +175,7 @@ variable "web_application_firewall_policy" {
         })))
       })))
     })))
-  })
+  }))
   default = null
 }
 

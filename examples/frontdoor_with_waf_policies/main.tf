@@ -53,29 +53,31 @@ module "frontdoor" {
     }
   ]
 
-  # In order to enable the use of your own custom HTTPS certificate you must grant Azure Front Door Service 
-  # access to your key vault. For instuctions on how to configure your Key Vault correctly 
-  # Please refer to the product documentation (https://bit.ly/38FuAZv).
+  # In order to enable the use of your own custom HTTPS certificate you must grant  
+  # Azure Front Door Service access to your key vault. For instuctions on how to  
+  # configure your Key Vault correctly. Please refer to the product documentation.
+  # https://bit.ly/38FuAZv
+
   frontend_endpoints = [
     {
       name      = "exampleFrontendEndpoint1"
-      host_name = "kumars-frontdoor21.azurefd.net"
+      host_name = "example-frontdoor51.azurefd.net"
     },
     {
       name      = "exampleFrontendEndpoint2"
-      host_name = "kumars-frontdoor22.azurefd.net"
+      host_name = "example-frontdoor52.azurefd.net"
       custom_https_configuration = {
         certificate_source = "FrontDoor"
       }
     },
     {
       name      = "exampleFrontendEndpoint3"
-      host_name = "kumars-frontdoor23.azurefd.net"
+      host_name = "example-frontdoor52.azurefd.net"
       custom_https_configuration = {
         certificate_source                         = "AzureKeyVault"
-        azure_key_vault_certificate_vault_id       = ""       # valid keyvalut id
-        azure_key_vault_certificate_secret_name    = ""       # valid certificate secret
-        azure_key_vault_certificate_secret_version = "Latest" # optional, use "latest" if not defined
+        azure_key_vault_certificate_vault_id       = "" # valid keyvalut id
+        azure_key_vault_certificate_secret_name    = "" # valid certificate secret
+        azure_key_vault_certificate_secret_version = "Latest"
       }
     }
   ]
@@ -83,63 +85,65 @@ module "frontdoor" {
   # Azure Front Door Web Application Firewall Policy configuration
 
   web_application_firewall_policy = {
-    name                              = "examplefdwafpolicy"
-    mode                              = "Prevention"
-    redirect_url                      = "https://www.contoso.com"
-    custom_block_response_status_code = 403
-    custom_block_response_body        = "PGh0bWw+CjxoZWFkZXI+PHRpdGxlPkhlbGxvPC90aXRsZT48L2hlYWRlcj4KPGJvZHk+CkhlbGxvIHdvcmxkCjwvYm9keT4KPC9odG1sPg=="
+    wafpolicy1 = {
+      name                              = "examplefdwafpolicy"
+      mode                              = "Prevention"
+      redirect_url                      = "https://www.contoso.com"
+      custom_block_response_status_code = 403
+      custom_block_response_body        = "PGh0bWw+CjxoZWFkZXI+PHRpdGxlPkhlbGxvPC90aXRsZT48L2hlYWRlcj4KPGJvZHk+CkhlbGxvIHdvcmxkCjwvYm9keT4KPC9odG1sPg=="
 
-    custom_rule = {
-      custom_rule1 = {
-        name     = "Rule1"
-        action   = "Block"
-        enabled  = true
-        priority = 1
-        type     = "MatchRule"
-        match_condition = {
-          match_variable     = "RequestHeader"
-          match_values       = ["windows"]
-          operator           = "Contains"
-          selector           = "UserAgent"
-          negation_condition = false
-          transforms         = ["Lowercase", "Trim"]
-        }
-        rate_limit_duration_in_minutes = 1
-        rate_limit_threshold           = 10
-      }
-    }
-
-    managed_rule = {
-      managed_rule1 = {
-        type    = "DefaultRuleSet"
-        version = "1.0"
-        exclusion = {
-          exclusion1 = {
-            match_variable = "QueryStringArgNames"
-            operator       = "Equals"
-            selector       = "not_suspicious"
+      custom_rule = {
+        custom_rule1 = {
+          name     = "Rule1"
+          action   = "Block"
+          enabled  = true
+          priority = 1
+          type     = "MatchRule"
+          match_condition = {
+            match_variable     = "RequestHeader"
+            match_values       = ["windows"]
+            operator           = "Contains"
+            selector           = "UserAgent"
+            negation_condition = false
+            transforms         = ["Lowercase", "Trim"]
           }
+          rate_limit_duration_in_minutes = 1
+          rate_limit_threshold           = 10
         }
-        override = {
-          override1 = {
-            rule_group_name = "PHP"
-            exclusion = {
-              exclusion1 = {
-                match_variable = "QueryStringArgNames"
-                operator       = "Equals"
-                selector       = "not_suspicious"
-              }
+      }
+
+      managed_rule = {
+        managed_rule1 = {
+          type    = "DefaultRuleSet"
+          version = "1.0"
+          exclusion = {
+            exclusion1 = {
+              match_variable = "QueryStringArgNames"
+              operator       = "Equals"
+              selector       = "not_suspicious"
             }
-            rule = {
-              rule1 = {
-                rule_id = "933100"
-                action  = "Block"
-                enabled = false
-                exclusion = {
-                  exclusion1 = {
-                    match_variable = "QueryStringArgNames"
-                    operator       = "Equals"
-                    selector       = "not_suspicious"
+          }
+          override = {
+            override1 = {
+              rule_group_name = "PHP"
+              exclusion = {
+                exclusion1 = {
+                  match_variable = "QueryStringArgNames"
+                  operator       = "Equals"
+                  selector       = "not_suspicious"
+                }
+              }
+              rule = {
+                rule1 = {
+                  rule_id = "933100"
+                  action  = "Block"
+                  enabled = false
+                  exclusion = {
+                    exclusion1 = {
+                      match_variable = "QueryStringArgNames"
+                      operator       = "Equals"
+                      selector       = "not_suspicious"
+                    }
                   }
                 }
               }

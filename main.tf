@@ -96,7 +96,7 @@ resource "azurerm_frontdoor" "main" {
       host_name                               = frontend_endpoint.value.host_name
       session_affinity_enabled                = frontend_endpoint.value.session_affinity_enabled
       session_affinity_ttl_seconds            = frontend_endpoint.value.session_affinity_ttl_seconds
-      web_application_firewall_policy_link_id = var.web_application_firewall_policy != null && frontend_endpoint.value.web_application_firewall_policy_link_id == null ? azurerm_frontdoor_firewall_policy.main.0.id : frontend_endpoint.value.web_application_firewall_policy_link_id
+      web_application_firewall_policy_link_id = var.web_application_firewall_policy != null && frontend_endpoint.value.web_application_firewall_policy_link_id == null ? element([for k in azurerm_frontdoor_firewall_policy.main : k.id], 0) : frontend_endpoint.value.web_application_firewall_policy_link_id
     }
   }
 
@@ -142,18 +142,18 @@ resource "azurerm_frontdoor" "main" {
 # Frontdoor Web application Firewall Policy Creation - Default is "false"
 #-------------------------------------------------------------------------
 resource "azurerm_frontdoor_firewall_policy" "main" {
-  count                             = var.web_application_firewall_policy != null ? 1 : 0
-  name                              = format("%s", var.web_application_firewall_policy.name)
+  for_each                          = var.web_application_firewall_policy != null ? { for k, v in var.web_application_firewall_policy : k => v if v != null } : {}
+  name                              = format("%s", each.value.name)
   resource_group_name               = local.resource_group_name
   enabled                           = true
-  mode                              = lookup(var.web_application_firewall_policy, "mode", "Prevention")
-  redirect_url                      = var.web_application_firewall_policy.redirect_url
-  custom_block_response_status_code = var.web_application_firewall_policy.custom_block_response_status_code
-  custom_block_response_body        = var.web_application_firewall_policy.custom_block_response_body
-  tags                              = merge({ "ResourceName" = format("%s", var.web_application_firewall_policy.name) }, var.tags, )
+  mode                              = lookup(each.value, "mode", "Prevention")
+  redirect_url                      = each.value["redirect_url"]
+  custom_block_response_status_code = each.value["custom_block_response_status_code"]
+  custom_block_response_body        = each.value["custom_block_response_body"]
+  tags                              = merge({ "ResourceName" = format("%s", each.value.name) }, var.tags, )
 
   dynamic "custom_rule" {
-    for_each = var.web_application_firewall_policy.custom_rule
+    for_each = each.value.custom_rule
     content {
       name                           = format("%s", custom_rule.value.name)
       action                         = custom_rule.value.action
@@ -178,7 +178,7 @@ resource "azurerm_frontdoor_firewall_policy" "main" {
   }
 
   dynamic "managed_rule" {
-    for_each = var.web_application_firewall_policy.managed_rule
+    for_each = each.value.managed_rule
     content {
       type    = managed_rule.value.type
       version = managed_rule.value.version
