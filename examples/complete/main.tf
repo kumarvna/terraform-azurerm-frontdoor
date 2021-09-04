@@ -59,16 +59,16 @@ module "frontdoor" {
       name      = "exampleFrontendEndpoint1"
       host_name = "kumars-frontdoor21.azurefd.net"
     },
-    /*     {
+  /*     {
       name      = "exampleFrontendEndpoint2"
-      host_name = "kumars-frontdoor21.azurefd.net"
+      host_name = "kumars-frontdoor22.azurefd.net"
       custom_https_configuration = {
         certificate_source = "FrontDoor"
       }
     },
     {
       name      = "exampleFrontendEndpoint3"
-      host_name = "kumars-frontdoor21.azurefd.net"
+      host_name = "kumars-frontdoor23.azurefd.net"
       custom_https_configuration = {
         certificate_source                      = "AzureKeyVault"
         azure_key_vault_certificate_vault_id    = "/subscriptions/1e3f0eeb-2235-44cd-b3a3-dcded0861d06/resourceGroups/rg-shared-westeurope-01/providers/Microsoft.KeyVault/vaults/demo-keyvault01"
@@ -76,15 +76,8 @@ module "frontdoor" {
         #        azure_key_vault_certificate_secret_version = "latest"  # optional, use "latest" if not defined
       }
     }
-    */
-  ]
 
-  /*  custom_https_configuration = {
-    key_vault_id                 = "/subscriptions/1e3f0eeb-2235-44cd-b3a3-dcded0861d06/resourceGroups/rg-shared-westeurope-01/providers/Microsoft.KeyVault/vaults/demo-keyvault01"
-    key_vault_certificate_secret = "demo-certificate1"
-  }
- */
-
+ */]
 
   web_application_firewall_policy = {
     name                              = "examplefdwafpolicy"
@@ -155,7 +148,7 @@ module "frontdoor" {
   }
 
 
-  # (Optional) To enable Azure Monitoring for Azure MySQL database
+  # (Optional) To enable Azure Monitoring for Azure Frontdoor
   # (Optional) Specify `storage_account_name` to save monitoring logs to storage. 
   #log_analytics_workspace_name = "loganalytics-we-sharedtest2"
 
@@ -168,22 +161,3 @@ module "frontdoor" {
     ServiceClass = "Gold"
   }
 }
-
-/* 
-data "azurerm_client_config" "current" {}
-
-resource "azurerm_key_vault_access_policy" "main" {
-  for_each     = var.custom_https_configuration != null ? [var.custom_https_configuration] : [] #{ for k, v in var.custom_https_configuration : k => v if v != null } : {}
-  key_vault_id = var.custom_https_configuration.key_vault_id
-  tenant_id    = data.azurerm_client_config.current.tenant_id
-  object_id    = "ad0e1c7e-6d38-4ba4-9efd-0bc77ba9f037"
-
-  certificate_permissions = [
-    "Get",
-  ]
-
-  secret_permissions = [
-    "Get",
-  ]
-} 
-*/
