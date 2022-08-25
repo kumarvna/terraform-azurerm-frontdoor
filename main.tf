@@ -39,11 +39,14 @@ data "azurerm_storage_account" "storeacc" {
 resource "azurerm_frontdoor" "main" {
   name                                         = format("%s", var.frontdoor_name)
   resource_group_name                          = local.resource_group_name
-  backend_pools_send_receive_timeout_seconds   = var.backend_pools_send_receive_timeout_seconds
-  enforce_backend_pools_certificate_name_check = var.enforce_backend_pools_certificate_name_check
   load_balancer_enabled                        = true
   friendly_name                                = var.friendly_name
   tags                                         = merge({ "ResourceName" = format("%s", var.frontdoor_name) }, var.tags, )
+
+  backend_pool_settings {
+    backend_pools_send_receive_timeout_seconds   = var.backend_pools_send_receive_timeout_seconds
+    enforce_backend_pools_certificate_name_check = var.enforce_backend_pools_certificate_name_check
+  }
 
   dynamic "backend_pool" {
     for_each = var.backend_pools

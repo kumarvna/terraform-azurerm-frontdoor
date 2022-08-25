@@ -243,55 +243,75 @@ Tag names are case-insensitive for operations. A tag with a tag name, regardless
 
 An effective naming convention assembles resource names by using important resource information as parts of a resource's name. For example, using these [recommended naming conventions](https://docs.microsoft.com/en-us/azure/cloud-adoption-framework/ready/azure-best-practices/naming-and-tagging#example-names), a public IP resource for a production SharePoint workload is named like this: `pip-sharepoint-prod-westus-001`.
 
+<!-- BEGIN_TF_DOCS -->
 ## Requirements
 
 | Name | Version |
 |------|---------|
-| terraform | >= 0.13 |
-| azurerm | >= 2.59.0 |
+| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 0.13 |
+| <a name="requirement_azurerm"></a> [azurerm](#requirement\_azurerm) | >= 3.0.0 |
 
 ## Providers
 
 | Name | Version |
 |------|---------|
-| azurerm | >= 2.59.0 |
+| <a name="provider_azurerm"></a> [azurerm](#provider\_azurerm) | >= 3.0.0 |
+
+## Modules
+
+No modules.
+
+## Resources
+
+| Name | Type |
+|------|------|
+| [azurerm_frontdoor.main](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/frontdoor) | resource |
+| [azurerm_frontdoor_custom_https_configuration.main](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/frontdoor_custom_https_configuration) | resource |
+| [azurerm_frontdoor_firewall_policy.main](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/frontdoor_firewall_policy) | resource |
+| [azurerm_monitor_diagnostic_setting.fd-diag](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/monitor_diagnostic_setting) | resource |
+| [azurerm_resource_group.rg](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/resource_group) | resource |
+| [azurerm_log_analytics_workspace.logws](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/data-sources/log_analytics_workspace) | data source |
+| [azurerm_resource_group.rgrp](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/data-sources/resource_group) | data source |
+| [azurerm_storage_account.storeacc](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/data-sources/storage_account) | data source |
 
 ## Inputs
 
-Name | Description | Type | Default
----- | ----------- | ---- | -------
-`create_resource_group`|Create new resource group and use it for all networking resources|string|`""`
-`resource_group_name`|The name of an existing resource group.|string|`""`
-`location`|The location for all resources while creating a new resource group.|string|`""`
-`frontdoor_name`|Specifies the name of the Front Door service. Must be globally unique|string|`""`
-`friendly_name`|A friendly name for the Front Door service|string|`""`
-`backend_pools_send_receive_timeout_seconds`|Specifies the send and receive timeout on forwarding request to the backend. When the timeout is reached, the request fails and returns. Possible values are between `0` - `240`. Defaults to `60`.|number|`60`
-`enforce_backend_pools_certificate_name_check`|Enforce certificate name check on HTTPS requests to all backend pools, this setting will have no effect on HTTP requests. Permitted values are `true` or `false`.|string|`false`
-`backend_pools`|A logical grouping of app instances across the world that receive the same traffic and respond with expected behavior. These backends are deployed across different regions or within the same region. All backends can be in `Active/Active` deployment mode or what is defined as `Active/Passive` configuration. Azure by default allows specifying up to `50` Backend Pools.|list(object({}))|`[]`
-`backend_pool_health_probes`|The list of backend pool health probes.|list(object({}))|`[]`
-`backend_pool_load_balancing`|Load-balancing settings for the backend pool to determine if the backend is healthy or unhealthy. They also check how to load-balance traffic between different backends in the backend pool.|list(object({}))|`[]`
-`frontend_endpoints`|Lists all of the frontend endpoints within a Front Door|list(object({}))|`[]`
-`routing_rules`|The list of Routing Rules to determine which particular rule to match the request to and then take the defined action in the configuration|list(object({}))|`[]`
-`web_application_firewall_policy`|Manages an Azure Front Door Web Application Firewall Policy instance|map(object({}))|`null`
-`log_analytics_workspace_name`|The name of log analytics workspace name|string|`null`
-`storage_account_name`|The name of the hub storage account to store logs|string|`null`
-`Tags`|A map of tags to add to all resources|map|`{}`
+| Name | Description | Type | Default | Required |
+|------|-------------|------|---------|:--------:|
+| <a name="input_backend_pool_health_probes"></a> [backend\_pool\_health\_probes](#input\_backend\_pool\_health\_probes) | The list of backend pool health probes. | <pre>list(object({<br>    name                = string<br>    path                = optional(string)<br>    protocol            = optional(string)<br>    probe_method        = optional(string)<br>    interval_in_seconds = optional(number)<br>  }))</pre> | `[]` | no |
+| <a name="input_backend_pool_load_balancing"></a> [backend\_pool\_load\_balancing](#input\_backend\_pool\_load\_balancing) | Load-balancing settings for the backend pool to determine if the backend is healthy or unhealthy. They also check how to load-balance traffic between different backends in the backend pool. | <pre>list(object({<br>    name                            = string<br>    sample_size                     = optional(number)<br>    successful_samples_required     = optional(number)<br>    additional_latency_milliseconds = optional(number)<br>  }))</pre> | `[]` | no |
+| <a name="input_backend_pools"></a> [backend\_pools](#input\_backend\_pools) | A logical grouping of app instances across the world that receive the same traffic and respond with expected behavior. These backends are deployed across different regions or within the same region. All backends can be in `Active/Active` deployment mode or what is defined as `Active/Passive` configuration. Azure by default allows specifying up to `50` Backend Pools. | <pre>list(object({<br>    name = string<br>    backend = object({<br>      address     = string<br>      host_header = string<br>      http_port   = number<br>      https_port  = number<br>      priority    = optional(number)<br>      weight      = optional(number)<br>    })<br>    load_balancing_name = string<br>    health_probe_name   = string<br>  }))</pre> | `[]` | no |
+| <a name="input_backend_pools_send_receive_timeout_seconds"></a> [backend\_pools\_send\_receive\_timeout\_seconds](#input\_backend\_pools\_send\_receive\_timeout\_seconds) | Specifies the send and receive timeout on forwarding request to the backend. When the timeout is reached, the request fails and returns. Possible values are between `0` - `240`. Defaults to `60`. | `number` | `60` | no |
+| <a name="input_create_resource_group"></a> [create\_resource\_group](#input\_create\_resource\_group) | Whether to create resource group and use it for all networking resources | `bool` | `false` | no |
+| <a name="input_enforce_backend_pools_certificate_name_check"></a> [enforce\_backend\_pools\_certificate\_name\_check](#input\_enforce\_backend\_pools\_certificate\_name\_check) | Enforce certificate name check on HTTPS requests to all backend pools, this setting will have no effect on HTTP requests. Permitted values are `true` or `false`. | `bool` | `false` | no |
+| <a name="input_fd_diag_logs"></a> [fd\_diag\_logs](#input\_fd\_diag\_logs) | Frontdoor Monitoring Category details for Azure Diagnostic setting | `list` | <pre>[<br>  "FrontdoorAccessLog",<br>  "FrontdoorWebApplicationFirewallLog"<br>]</pre> | no |
+| <a name="input_friendly_name"></a> [friendly\_name](#input\_friendly\_name) | A friendly name for the Front Door service. | `string` | `""` | no |
+| <a name="input_frontdoor_name"></a> [frontdoor\_name](#input\_frontdoor\_name) | Specifies the name of the Front Door service. Must be globally unique. | `string` | `""` | no |
+| <a name="input_frontend_endpoints"></a> [frontend\_endpoints](#input\_frontend\_endpoints) | Lists all of the frontend endpoints within a Front Door | <pre>list(object({<br>    name                                    = string<br>    host_name                               = string<br>    session_affinity_enabled                = optional(bool)<br>    session_affinity_ttl_seconds            = optional(number)<br>    web_application_firewall_policy_link_id = optional(string)<br>    custom_https_configuration = optional(object({<br>      certificate_source                         = optional(string)<br>      azure_key_vault_certificate_vault_id       = optional(string)<br>      azure_key_vault_certificate_secret_name    = optional(string)<br>      azure_key_vault_certificate_secret_version = optional(string)<br>    }))<br>  }))</pre> | `[]` | no |
+| <a name="input_location"></a> [location](#input\_location) | The location/region to keep all your network resources. To get the list of all locations with table format from azure cli, run 'az account list-locations -o table' | `string` | `""` | no |
+| <a name="input_log_analytics_workspace_name"></a> [log\_analytics\_workspace\_name](#input\_log\_analytics\_workspace\_name) | The name of log analytics workspace name | `any` | `null` | no |
+| <a name="input_resource_group_name"></a> [resource\_group\_name](#input\_resource\_group\_name) | A container that holds related resources for an Azure solution | `string` | `""` | no |
+| <a name="input_routing_rules"></a> [routing\_rules](#input\_routing\_rules) | The list of Routing Rules to determine which particular rule to match the request to and then take the defined action in the configuration | <pre>list(object({<br>    name               = string<br>    frontend_endpoints = list(string)<br>    accepted_protocols = optional(list(string))<br>    patterns_to_match  = optional(list(string))<br>    forwarding_configuration = optional(object({<br>      backend_pool_name                     = string<br>      cache_enabled                         = optional(bool)<br>      cache_use_dynamic_compression         = optional(bool)<br>      cache_query_parameter_strip_directive = optional(string)<br>      cache_query_parameters                = optional(list(string))<br>      cache_duration                        = optional(string)<br>      custom_forwarding_path                = optional(string)<br>      forwarding_protocol                   = optional(string)<br>    }))<br>    redirect_configuration = optional(object({<br>      custom_host         = optional(string)<br>      redirect_protocol   = optional(string)<br>      redirect_type       = string<br>      custom_fragment     = optional(string)<br>      custom_path         = optional(string)<br>      custom_query_string = optional(string)<br>    }))<br>  }))</pre> | `[]` | no |
+| <a name="input_storage_account_name"></a> [storage\_account\_name](#input\_storage\_account\_name) | The name of the hub storage account to store logs | `any` | `null` | no |
+| <a name="input_tags"></a> [tags](#input\_tags) | A map of tags to add to all resources | `map(string)` | `{}` | no |
+| <a name="input_web_application_firewall_policy"></a> [web\_application\_firewall\_policy](#input\_web\_application\_firewall\_policy) | Manages an Azure Front Door Web Application Firewall Policy instance. | <pre>map(object({<br>    name                              = string<br>    mode                              = optional(string)<br>    redirect_url                      = optional(string)<br>    custom_block_response_status_code = optional(number)<br>    custom_block_response_body        = optional(string)<br><br>    custom_rule = optional(map(object({<br>      name     = string<br>      action   = string<br>      priority = number<br>      type     = string<br>      match_condition = object({<br>        match_variable     = string<br>        match_values       = list(string)<br>        operator           = string<br>        selector           = optional(string)<br>        negation_condition = optional(bool)<br>        transforms         = optional(list(string))<br>      })<br>      rate_limit_duration_in_minutes = optional(number)<br>      rate_limit_threshold           = optional(number)<br>    })))<br><br>    managed_rule = optional(map(object({<br>      type    = string<br>      version = string<br>      exclusion = optional(map(object({<br>        match_variable = string<br>        operator       = string<br>        selector       = string<br>      })))<br>      override = optional(map(object({<br>        rule_group_name = string<br>        exclusion = map(object({<br>          match_variable = string<br>          operator       = string<br>          selector       = string<br>        }))<br>        rule = optional(map(object({<br>          rule_id = string<br>          action  = string<br>          enabled = bool<br>          exclusion = map(object({<br>            match_variable = string<br>            operator       = string<br>            selector       = string<br>          }))<br>        })))<br>      })))<br>    })))<br>  }))</pre> | `null` | no |
 
 ## Outputs
 
-Name | Description
----- | -----------
-`resource_group_name`| The name of the resource group in which resources are created
-`resource_group_id`| The id of the resource group in which resources are created
-`resource_group_location`| The location of the resource group in which resources are created
-`backend_pool_ids`|The ID's of the Azure Front Door Backend Pool
-`backend_pool_health_probes`|The ID's of the Azure Front Door Backend Health Probe
-`backend_pool_load_balancing`|The ID of the Azure Front Door Backend Load Balancer
-`frontend_endpoint_id`|The ID of the Azure Front Door Frontend Endpoint
-`frontdoor_id`|The ID of the FrontDoor
-`frontdoor_waf_policy_id`|The ID of the FrontDoor Firewall Policy
-`frontdoor_waf_policy_location`|The Azure Region where this FrontDoor Firewall Policy exists
-`frontdoor_waf_policy_frontend_endpoint_ids`|The Frontend Endpoints associated with this Front Door Web Application Firewall policy
+| Name | Description |
+|------|-------------|
+| <a name="output_backend_pool_health_probes"></a> [backend\_pool\_health\_probes](#output\_backend\_pool\_health\_probes) | The ID's of the Azure Front Door Backend Health Probe |
+| <a name="output_backend_pool_ids"></a> [backend\_pool\_ids](#output\_backend\_pool\_ids) | The ID's of the Azure Front Door Backend Pool |
+| <a name="output_backend_pool_load_balancing"></a> [backend\_pool\_load\_balancing](#output\_backend\_pool\_load\_balancing) | The ID of the Azure Front Door Backend Load Balancer |
+| <a name="output_frontdoor_id"></a> [frontdoor\_id](#output\_frontdoor\_id) | The ID of the FrontDoor |
+| <a name="output_frontdoor_waf_policy_frontend_endpoint_ids"></a> [frontdoor\_waf\_policy\_frontend\_endpoint\_ids](#output\_frontdoor\_waf\_policy\_frontend\_endpoint\_ids) | The Frontend Endpoints associated with this Front Door Web Application Firewall policy |
+| <a name="output_frontdoor_waf_policy_id"></a> [frontdoor\_waf\_policy\_id](#output\_frontdoor\_waf\_policy\_id) | The ID of the FrontDoor Firewall Policy |
+| <a name="output_frontdoor_waf_policy_location"></a> [frontdoor\_waf\_policy\_location](#output\_frontdoor\_waf\_policy\_location) | The Azure Region where this FrontDoor Firewall Policy exists |
+| <a name="output_frontend_endpoint_id"></a> [frontend\_endpoint\_id](#output\_frontend\_endpoint\_id) | The ID of the Azure Front Door Frontend Endpoint |
+| <a name="output_resource_group_id"></a> [resource\_group\_id](#output\_resource\_group\_id) | The id of the resource group in which resources are created |
+| <a name="output_resource_group_location"></a> [resource\_group\_location](#output\_resource\_group\_location) | The location of the resource group in which resources are created |
+| <a name="output_resource_group_name"></a> [resource\_group\_name](#output\_resource\_group\_name) | The name of the resource group in which resources are created |
+<!-- END_TF_DOCS -->
 
 ## Resource Graph
 
